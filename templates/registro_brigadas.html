@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crear reserva / Evento - Mapa interactivo</title>
+
+  <!-- Leaflet CSS (sin integrity para evitar bloqueos SRI) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+
+  <style>
+    :root{ --bg1:#85c079; --bg2:#85c079; --card:#ffffff; --primary:#103b06; }
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial; margin:0; min-height:100vh; background:linear-gradient(135deg,var(--bg1),var(--bg2)); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:24px}
+    .card{background:var(--card); width:100%; max-width:980px; border-radius:12px; box-shadow:0 8px 30px rgba(2,6,23,0.08); overflow:hidden; margin-top:20px}
+    .grid{display:grid; grid-template-columns:1fr 420px; gap:20px}
+    header{padding:20px 28px; border-bottom:1px solid #f1f6f9}
+    header h1{margin:0;font-size:20px;color:#064a54}
+    .form{padding:22px}
+    label{display:block;font-size:13px;color:#084a52;margin-bottom:6px}
+    input[type=text], input[type=date], select{width:100%; padding:10px 12px; border-radius:8px; border:1px solid #e6f1f4; margin-bottom:12px}
+    .map-wrapper{height:480px; padding:12px}
+    #map{height:100%; border-radius:8px}
+    .participants{max-height:240px; overflow:auto; border:1px solid #eef6f8; padding:8px; border-radius:8px; background:#fbfeff}
+    .participant{display:flex; align-items:center; gap:10px; padding:6px 4px}
+    .footer{padding:18px; border-top:1px solid #f1f6f9; display:flex; justify-content:space-between; align-items:center}
+    button{background:var(--primary); color:white; border:0; padding:10px 14px; border-radius:10px; font-weight:600}
+    .muted{font-size:12px;color:#5c6b6c}
+    .coords{display:flex; gap:8px}
+    .coords input{flex:1}
+    .error{color:#b00020;font-size:13px}
+
+    /* --- HEADER PRINCIPAL --- */
+    #header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 40px;
+      background: #a1d4e0;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    #header .logo img {
+      height: 60px;
+    }
+
+    .navbar ul {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar a {
+      text-decoration: none;
+      color: #00796b;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .navbar a:hover {
+      color: #004d40;
+    }
+
+    .search-box input {
+      padding: 7px 12px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER PRINCIPAL -->
+  <header id="header">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='img/logoIDEAM.png') }}" alt="IDEAM Logo">
+    </div>
+
+    <nav class="navbar">
+      <ul>
+        <li><a href="{{ url_for('index2') }}">Inicio</a></li>
+        <li><a href="#acerca">Acerca de Nosotros</a></li>
+        <li><a href="{{ url_for('login') }}">Cerrar Sesión</a></li>
+      </ul>
+    </nav>
+
+    <div class="search-box">
+      <input type="text" placeholder="Buscar...">
+    </div>
+  </header>
+
+  <div class="card">
+    <header><h1>Crear reserva / evento</h1></header>
+    <div class="grid">
+      <div class="form">
+        <form id="reservaForm">
+          <label for="fechainicio">Fecha inicio</label>
+          <input type="date" id="fechainicio" name="fechainicio" required />
+          <label for="fechafin">Fecha fin</label>
+          <input type="date" id="fechafin" name="fechafin" required />
+          <div id="dateError" class="error" style="display:none"></div>
+
+          <label for="municipioSelect">Departamento</label>
+          <select id="municipioSelect" name="municipio" style="margin-bottom:8px">
+            <option value="">-- Seleccione departamento --</option>
+          </select>
+          <input type="text" id="municipioInput" placeholder="O escriba el departamento si no está en la lista" style="margin-bottom:12px" />
+
+          <label>Ubicación (haga clic en el mapa para seleccionar)</label>
+          <div class="coords">
+            <input type="text" id="lat" name="lat" placeholder="Latitud" readonly />
+            <input type="text" id="lng" name="lng" placeholder="Longitud" readonly />
+          </div>
+          <div style="margin:8px 0" class="muted">También puede arrastrar el marcador para ajustar la posición.</div>
+
+          <label>Participantes (seleccione exactamente 4)</label>
+          <div class="participants" id="participantsList">
+            <div class="muted">Cargando lista de participantes...</div>
+          </div>
+          <div id="participantsError" class="error" style="display:none">Debe seleccionar exactamente 4 participantes.</div>
+        </form>
+      </div>
+
+      <div class="map-wrapper">
+        <div id="map"></div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="muted">Selecciona un departamento para filtrar participantes.</div>
+      <div><button id="submitBtn">Crear reserva</button></div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS (sin integrity) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+  <script>
+    // ----- mapa -----
+    const map = L.map('map').setView([4.5709, -74.2973], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    let marker = L.marker([4.5709, -74.2973], {draggable:true}).addTo(map);
+
+    function setCoords(lat, lng){
+      document.getElementById('lat').value = Number(lat).toFixed(6);
+      document.getElementById('lng').value = Number(lng).toFixed(6);
+    }
+    setCoords(4.5709, -74.2973);
+
+    map.on('click', e => {
+      marker.setLatLng(e.latlng);
+      setCoords(e.latlng.lat, e.latlng.lng);
+    });
+
+    marker.on('dragend', () => {
+      const p = marker.getLatLng();
+      setCoords(p.lat, p.lng);
+    });
+
+    setTimeout(()=> { try { map.invalidateSize(); } catch(e){ console.warn('invalidateSize failed', e); } }, 250);
+
+    function fillDepartamentosSelect() {
+      const select = document.getElementById('municipioSelect');
+      const departamentos = [
+        "Amazonas", "Antioquia", "Arauca", "Atlántico", "Bolívar", "Boyacá", "Caldas", "Caquetá",
+        "Casanare", "Cauca", "Cesar", "Chocó", "Córdoba", "Cundinamarca", "Guainía", "Guaviare",
+        "Huila", "La Guajira", "Magdalena", "Meta", "Nariño", "Norte de Santander", "Putumayo",
+        "Quindío", "Risaralda", "San Andrés y Providencia", "Santander", "Sucre", "Tolima",
+        "Valle del Cauca", "Vaupés", "Vichada"
+      ];
+      select.innerHTML = '<option value="">-- Seleccione departamento --</option>';
+      departamentos.forEach(dep => {
+        const opt = document.createElement('option');
+        opt.value = dep;
+        opt.textContent = dep;
+        select.appendChild(opt);
+      });
+    }
+
+    async function loadUsuarios(departamento = '') {
+      const div = document.getElementById('participantsList');
+      try {
+        let url = '/api/usuarios';
+        if (departamento && departamento.trim() !== '') {
+          url += '?departamento=' + encodeURIComponent(departamento.trim());
+        }
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Respuesta no ok: ' + res.status);
+        const users = await res.json();
+        div.innerHTML = '';
+        if (!users || users.length === 0) {
+          div.innerHTML = '<div class="muted">No hay participantes para el departamento seleccionado.</div>';
+          return;
+        }
+        users.forEach(u => {
+          const id = u.NRO_DOCUMENTO || u.nro_documento || u.id;
+          const nombre = `${u.NOMBRE || u.nombre || ''} ${u.APELLIDO || u.apellido || ''}`.trim();
+          const dom = document.createElement('div');
+          dom.className = 'participant';
+          dom.innerHTML = `
+            <input type="checkbox" class="participantCheckbox" data-id="${id}" id="p_${id}" />
+            <label for="p_${id}">${nombre} <span class="muted">(${u.DEPARTAMENTO || u.departamento || ''})</span></label>
+          `;
+          div.appendChild(dom);
+        });
+        attachParticipantLogic();
+      } catch (err) {
+        div.innerHTML = '<div class="muted">Error al cargar participantes: ' + (err.message || err) + '</div>';
+        console.error(err);
+      }
+    }
+
+    function attachParticipantLogic(){
+      const checkboxes = document.querySelectorAll('.participantCheckbox');
+      checkboxes.forEach(cb => cb.addEventListener('change', ()=>{
+        const checked = document.querySelectorAll('.participantCheckbox:checked').length;
+        if(checked >= 4){
+          document.querySelectorAll('.participantCheckbox:not(:checked)').forEach(el=>el.disabled = true);
+        }else{
+          document.querySelectorAll('.participantCheckbox').forEach(el=>el.disabled = false);
+        }
+      }));
+    }
+
+    document.getElementById('municipioSelect').addEventListener('change', function() {
+      const dep = this.value;
+      document.getElementById('municipioInput').value = '';
+      loadUsuarios(dep);
+    });
+
+    document.getElementById('municipioInput').addEventListener('blur', function() {
+      const val = this.value.trim();
+      if (val) {
+        document.getElementById('municipioSelect').value = '';
+        loadUsuarios(val);
+      }
+    });
+
+    function validateDates(){
+      const start = document.getElementById('fechainicio').value;
+      const end = document.getElementById('fechafin').value;
+      const err = document.getElementById('dateError');
+      err.style.display = 'none';
+      if(!start || !end) return true;
+      const s = new Date(start);
+      const e = new Date(end);
+      if(e < s){ err.textContent = 'La fecha fin no puede ser anterior a la fecha inicio.'; err.style.display = 'block'; return false; }
+      return true;
+    }
+    document.getElementById('fechafin').addEventListener('change', validateDates);
+    document.getElementById('fechainicio').addEventListener('change', validateDates);
+
+    document.getElementById('submitBtn').addEventListener('click', async (e)=>{
+      e.preventDefault();
+      if(!validateDates()) return;
+      const checkedBoxes = Array.from(document.querySelectorAll('.participantCheckbox:checked'));
+      if(checkedBoxes.length !== 4){
+        document.getElementById('participantsError').style.display = 'block';
+        return;
+      } else {
+        document.getElementById('participantsError').style.display = 'none';
+      }
+
+      const payload = {
+        fechainicio: document.getElementById('fechainicio').value,
+        fechafin: document.getElementById('fechafin').value,
+        municipio: document.getElementById('municipioInput').value || document.getElementById('municipioSelect').value,
+        lat: document.getElementById('lat').value,
+        lng: document.getElementById('lng').value,
+        participantes: checkedBoxes.map(cb => cb.dataset.id)
+      };
+
+      try {
+        const res = await fetch('/api/crear_reserva', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          alert('Reserva creada con éxito');
+        } else {
+          const txt = await res.text();
+          alert('Error al crear reserva: ' + txt);
+        }
+      } catch (err) {
+        alert('Error de conexión con el servidor: ' + err.message);
+      }
+    });
+
+    fillDepartamentosSelect();
+    loadUsuarios();
+  </script>
+</body>
+</html>

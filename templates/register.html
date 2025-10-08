@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Mensaje de alerta */
+        .alert-box {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+            width: 60%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .alert-box.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header id="header">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='img/logoIDEAM.png') }}" alt="IDEAM Logo">
+        </div>
+
+        <!-- NAVBAR -->
+        <nav class="navbar">
+            <ul>
+                <li><a href="{{ url_for('index2') }}">Inicio</a></li>
+                <li><a href="#acerca">Acerca de Nosotros</a></li>
+                <li><a href="{{ url_for('login') }}">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+
+        <!-- Buscador -->
+        <div class="search-box">
+            <input type="text" placeholder="Buscar...">
+        </div>
+    </header>
+
+    <!-- Script efecto scroll -->
+    <script>
+        window.addEventListener("scroll", function () {
+            const header = document.getElementById("header");
+            header.classList.toggle("scrolled", window.scrollY > 50);
+        });
+    </script>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="container" style="margin-top: 120px;">
+        <h1>Registro de Usuario</h1>
+
+        <!-- MENSAJES FLASH -->
+        {% with mensajes = get_flashed_messages() %}
+          {% if mensajes %}
+            <div class="alert-box">
+              {% for mensaje in mensajes %}
+                <p>{{ mensaje }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('register') }}" method="POST" id="registroForm">
+            <div class="form-group">
+                <label for="nro_documento">Número de Documento:</label>
+                <input type="number" id="nro_documento" name="nro_documento" required>
+            </div>
+
+            <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo se permiten letras">
+            </div>
+
+            <div class="form-group">
+                <label for="apellido">Apellido:</label>
+                <input type="text" id="apellido" name="apellido" required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo se permiten letras">
+            </div>
+
+            <div class="form-group">
+                <label for="contrasena">Contraseña:</label>
+                <input type="password" id="contrasena" name="contrasena" required minlength="5">
+            </div>
+
+            <div class="form-group">
+                <label for="departamento">Departamento:</label>
+                <select id="departamento" name="departamento" required>
+                    <option value="">-- Selecciona un departamento --</option>
+                    {% for dep in departamentos %}
+                        <option value="{{ dep }}">{{ dep }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn">Registrar</button>
+        </form>
+    </div>
+
+    <!-- Validación para evitar números en nombre y apellido -->
+    <script>
+        document.getElementById("nombre").addEventListener("input", function () {
+            this.value = this.value.replace(/[^a-zA-ZÁÉÍÓÚáéíóúÑñ\s]/g, '');
+        });
+        document.getElementById("apellido").addEventListener("input", function () {
+            this.value = this.value.replace(/[^a-zA-ZÁÉÍÓÚáéíóúÑñ\s]/g, '');
+        });
+    </script>
+
+</body>
+</html>

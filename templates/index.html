@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IDEAM</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+  <!-- HEADER -->
+  <header id="header">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='img/logoIDEAM.png') }}" alt="IDEAM Logo">
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <ul>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#acerca">Acerca de Nosotros</a></li>
+        <li><a href="{{ url_for('login') }}">Cerrar Sesión</a></li>
+      </ul>
+    </nav>
+
+    <!-- Buscador -->
+    <div class="search-box">
+      <input type="text" placeholder="Buscar...">
+    </div>
+  </header>
+
+  <!-- Script efecto scroll -->
+  <script>
+    window.addEventListener("scroll", function () {
+      const header = document.getElementById("header");
+      header.classList.toggle("scrolled", window.scrollY > 50);
+    });
+  </script>
+
+  <!-- CARRUSEL -->
+  <section id="inicio" class="carousel-container">
+    <div class="carousel-slide active">
+      <iframe width="1890" height="1034"
+        src="https://www.youtube.com/embed/QobWnV-WB38?autoplay=1&mute=1&loop=1&playlist=QobWnV-WB38"
+        title="Video IDEAM" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+    <div class="carousel-slide">
+      <img src="{{ url_for('static', filename='img/carrusel3.jpg') }}" alt="Imagen 2">
+    </div>
+    <div class="carousel-slide">
+      <img src="{{ url_for('static', filename='img/bosque1.jpg') }}" alt="Imagen 3">
+    </div>
+    <div class="carousel-slide">
+      <img src="{{ url_for('static', filename='img/bosque2.jpg') }}" alt="Imagen 4">
+    </div>
+
+    <a class="prev">&#10094;</a>
+    <a class="next">&#10095;</a>
+  </section>
+
+  <!-- TARJETAS -->
+  <section class="action-buttons" id="registros">
+    <a href="{{ url_for('registro_arbol') }}" class="card arboles">
+      <div class="card-img"
+        style="background-image: url('{{ url_for('static', filename='img/formularioarbol.jpg') }}');">
+      </div>
+      <div class="card-text">Formulario Árboles</div>
+    </a>
+
+    <a href="{{ url_for('registro_plantas') }}" class="card plantas">
+      <div class="card-img"
+        style="background-image: url('{{ url_for('static', filename='img/formularioplantas.jpg') }}');">
+      </div>
+      <div class="card-text">Formulario Plantas</div>
+    </a>
+  </section>
+
+  <!-- CUADRO BRIGADA (solo si el usuario tiene una asignada) -->
+  {% if brigada %}
+  <section class="brigada-section">
+    <div class="brigada-box">
+      <h2>Mi Brigada Asignada</h2>
+      <p><strong>Municipio:</strong> {{ brigada['municipio'] }}</p>
+      <p><strong>Fecha de inicio:</strong> {{ brigada['fecha_inicio'] }}</p>
+      <p><strong>Fecha de fin:</strong> {{ brigada['fecha_fin'] }}</p>
+      <p><strong>Coordenadas:</strong> {{ brigada['latitud'] }}, {{ brigada['longitud'] }}</p>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- INFO -->
+  <section id="acerca" class="container">
+    <img src="{{ url_for('static', filename='img/ideaminfo.jpg') }}" alt="IDEAM">
+    <div class="text">
+      <h2>IDEAM (Instituto de Hidrología, Meteorología y Estudios Ambientales)</h2>
+      <p>
+        El IDEAM realiza expediciones científicas en distintas regiones de Colombia para registrar y monitorear especies de árboles y plantas.
+      </p>
+      <p>
+        Los reportes obtenidos fortalecen las bases de datos nacionales y apoyan la investigación ambiental, contribuyendo a la protección de bosques y recursos naturales.
+      </p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-card">
+      <div class="footer-info">
+        <h3>Instituto de Hidrología, Meteorología y Estudios Ambientales</h3>
+        <h4>Sede principal</h4>
+        <p>
+          Dirección: Calle 25 D No. 96 B - 70 Bogotá D.C.<br>
+          Código Postal: 110911<br>
+          Horario: Lunes a Viernes 8:00 am - 5:00 pm<br>
+          PBX: +57 (601) 352 7160<br>
+          01 8000 110012<br>
+          Email: <a href="mailto:contacto@ideam.gov.co">contacto@ideam.gov.co</a>
+        </p>
+        <div class="footer-icons">
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-facebook"></i></a>
+          <a href="#"><i class="fas fa-envelope"></i></a>
+        </div>
+      </div>
+
+      <div class="footer-logo">
+        <img src="{{ url_for('static', filename='img/LogoAmbiente.png') }}" alt="Logo Ambiente">
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <img src="{{ url_for('static', filename='img/COlogo.png') }}" alt="Logo Colombia">
+      <img src="{{ url_for('static', filename='img/ColGov.png') }}" alt="Logo GOV.CO">
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

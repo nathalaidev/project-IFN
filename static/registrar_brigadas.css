@@ -1,0 +1,53 @@
+/* === registrar_brigadas.css === */
+
+#map {
+  width: 100%;
+  height: 600px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  margin-top: 20px;
+}
+
+.btn {
+  background-color: #1abc9c;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  background-color: #16a085;
+}
+
+.formulario {
+  margin-top: 30px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  display: none;
+}
+
+.formulario input,
+.formulario select {
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.formulario label {
+  font-weight: bold;
+}
+
+.container h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 25px;
+}

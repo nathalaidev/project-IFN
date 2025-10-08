@@ -1,0 +1,525 @@
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+
+/* HEADER */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #262C31;
+  /* color principal del header */
+  transition: background 0.3s, padding 0.3s;
+  z-index: 1000;
+}
+
+/* HEADER SCROLLED */
+header.scrolled {
+  background: #1b1b1b;
+  /* cambia al hacer scroll */
+  padding: 10px 40px;
+}
+
+/* LOGO */
+.logo img {
+  height: 70px;
+}
+
+/* NAVBAR */
+.navbar ul {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+}
+
+.navbar ul li a {
+  text-decoration: none;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.navbar ul li a:hover {
+  color: #1abc9c;
+  /* hover */
+}
+
+/* SEARCH BOX */
+.search-box input {
+  padding: 10px 12px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+/*CARRUSEL*/
+
+body {
+  margin: 0;
+  background: #f4f4f4;
+  padding-top: 80px;
+  /* asegura espacio por el header fijo */
+}
+
+/* CONTENEDOR */
+.carousel-container {
+  position: relative;
+  max-width: 1890px;
+  height: 850px;
+  margin: 130px auto 0 auto;
+  /* 👈 margen de 30px desde el header */
+  overflow: hidden;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+
+/* SLIDES */
+.carousel-slide {
+  display: none;
+  width: 100%;
+  height: 100%;
+  animation: fadeSlide 1.2s ease-in-out;
+}
+
+.carousel-slide.active {
+  display: block;
+}
+
+.carousel-slide img,
+.carousel-slide iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ANIMACIÓN */
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* BOTONES */
+.prev,
+.next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  font-weight: bold;
+  padding: 12px;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.3s;
+}
+
+.prev:hover,
+.next:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.prev {
+  left: 20px;
+}
+
+.next {
+  right: 20px;
+}
+
+/* SECCIÓN BOTONES */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  /* separación entre botones */
+  margin-top: 40px;
+  /* espacio respecto al carrusel */
+  flex-wrap: wrap;
+}
+
+/* TARJETA */
+.card {
+  width: 300px;
+  height: 447px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  background: #000;
+  transition: transform 0.6s ease;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+}
+
+/* IMAGEN */
+.card-img {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(70%);
+  transform: scale(1.1);
+  transition: transform 0.6s ease, filter 0.4s ease;
+}
+
+.card:hover .card-img {
+  transform: scale(1);
+  filter: brightness(100%);
+}
+
+/* TEXTO */
+.card-text {
+  position: absolute;
+  bottom: 12px;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+/* LÍNEA DE COLOR */
+.card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 8px;
+  width: 100%;
+}
+
+/* Colores personalizados */
+.card.brigadas::after {
+  background: #8B3A3A;
+}
+
+/* rojo vino */
+.card.arboles::after {
+  background: #0C7C59;
+}
+
+/* Color para tarjeta de Brigadas */
+.card.brigada::after {
+  background: #8B3A3A; /* rojo vino */
+}
+
+/* Color para tarjeta de Registrar Usuario */
+.card.usuario::after {
+  background: #00796b; /* verde esmeralda */
+}
+
+
+/* verde bosque */
+.card.plantas::after {
+  background: #1CA64C;
+}
+
+/* verde claro */
+.card.reportes::after {
+  background: #5C4EB5;
+}
+
+/* morado */
+.card.noticias::after {
+  background: #2C3E50;
+}
+
+/* gris azulado */
+
+/* GALERIA DE IMAGENES */
+
+.galeria {
+  max-width: 1200px;
+  margin: 30px auto;
+  text-align: center;
+  padding: 20px;
+}
+
+.galeria h2 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.galeria-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.galeria-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+.galeria-item img {
+  width: 100%;
+  height: 430px;
+  /* Ajusta a la altura que quieras */
+  object-fit: cover;
+  /* Recorta y centra la imagen */
+  transition: transform 0.4s ease;
+}
+
+
+.galeria-item:hover img {
+  transform: scale(1.05);
+}
+
+/* Lightbox */
+#lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.5s ease;
+  z-index: 1000;
+}
+
+#lightbox img {
+  max-width: 90%;
+  max-height: 80%;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+  animation: fadeIn 0.6s ease;
+}
+
+#lightbox .close {
+  position: absolute;
+  top: 30px;
+  right: 40px;
+  font-size: 40px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#lightbox .close:hover {
+  color: red;
+}
+
+/* Animación difuminado */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* INFO */
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.container {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.container img {
+  width: 45%;
+  border-radius: 10px;
+}
+
+.text {
+  width: 50%;
+  text-align: justify;
+  font-size: 25px;
+}
+
+.text h2 {
+  font-size: 35px;
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.text p {
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+/* FOOTER */
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.footer {
+  margin-top: 150px;
+  background: #2c2c2c;
+  /* fondo gris oscuro detrás */
+  color: #000;
+  font-family: Arial, sans-serif;
+}
+
+/* Recuadro blanco */
+.footer-card {
+  background: #fff;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 35px;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+  transform: translateY(-30px);
+  /* para que flote un poco sobre el fondo */
+}
+
+/* Info de contacto */
+.footer-info h3 {
+  font-size: 17px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.footer-info h4 {
+  font-size: 15px;
+  margin-bottom: 12px;
+  font-weight: bold;
+}
+
+.footer-info p {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.footer-info a {
+  color: #004c92;
+  text-decoration: none;
+}
+
+.footer-info a:hover {
+  text-decoration: underline;
+}
+
+/* Íconos redes sociales */
+.footer-icons {
+  margin-top: 15px;
+  display: flex;
+  gap: 18px;
+}
+
+.footer-icons a {
+  font-size: 20px;
+  color: #000;
+  transition: color 0.3s;
+}
+
+.footer-icons a:hover {
+  color: #00796b;
+}
+
+/* Logo Ambiente */
+.footer-logo {
+  text-align: center;
+  min-width: 120px;
+}
+
+.footer-logo img {
+  width: 170px;
+  margin-bottom: 8px;
+}
+
+.footer-logo span {
+  display: block;
+  font-size: 16px;
+  color: #77b255;
+  font-weight: bold;
+}
+
+/* Franja inferior verde */
+.footer-bottom {
+  background: #00796b;
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+}
+
+.footer-bottom img {
+  height: 40px;
+}
+
+.brigada-section {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+}
+
+.brigada-box {
+  background-color: #e9f5f2;
+  border-left: 6px solid #1b8d73;
+  border-radius: 12px;
+  padding: 20px 30px;
+  width: 70%;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.brigada-box h2 {
+  color: #1b8d73;
+  margin-bottom: 10px;
+}
+
+.brigada-box p {
+  font-size: 16px;
+  margin: 6px 0;
+}

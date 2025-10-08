@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login IDEAM</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+  <div class="login-container">
+
+    <!-- Panel Izquierdo -->
+    <div class="left-side">
+      <div class="login-box">
+        <img src="{{ url_for('static', filename='img/LogoIDEAM.png') }}"
+             alt="IDEAM Logo"
+             class="logo">
+
+        <h2>Iniciar Sesión</h2>
+
+        <!-- MENSAJES FLASH -->
+        {% with mensajes = get_flashed_messages() %}
+          {% if mensajes %}
+            <div class="alert-box">
+              {% for mensaje in mensajes %}
+                <p>{{ mensaje }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <!-- Formulario de Login -->
+        <form method="POST" action="{{ url_for('login') }}">
+          <div class="input-group">
+            <i class="fas fa-user icon"></i>
+            <input type="text" name="nro_documento" placeholder="Número de documento" required>
+          </div>
+
+          <div class="input-group">
+            <i class="fas fa-lock icon"></i>
+            <input type="password" name="contrasena" placeholder="Contraseña" required>
+          </div>
+
+          <button type="submit" class="btn-login">Ingresar</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Panel Derecho -->
+    <div class="right-side">
+      <img src="{{ url_for('static', filename='img/Fondo.png') }}" alt="Fondo IDEAM">
+    </div>
+
+  </div>
+</body>
+
+</html>
