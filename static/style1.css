@@ -1,0 +1,156 @@
+/* ===========================
+   ESTILOS GENERALES
+   =========================== */
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  height: 100vh;
+  background-color: #f3f4f6;
+}
+
+/* ===========================
+   CONTENEDOR PRINCIPAL
+   =========================== */
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+/* ===========================
+   SECCIÓN IZQUIERDA (FORMULARIO)
+   =========================== */
+.left {
+  flex: 1;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+.left h1 {
+  font-size: 38px;
+  margin-bottom: 40px;
+  font-weight: bold;
+  color: #111;
+}
+
+/* Contenedor de cada input con icono */
+.input-field {
+  display: flex;
+  align-items: center;
+  margin: 25px 0;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+}
+
+/* Iconos FontAwesome */
+.input-field i {
+  position: absolute;
+  left: 18px;
+  color: #ffffff;
+  font-size: 20px;
+}
+
+/* Inputs generales */
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 16px 20px 16px 55px;
+  border: none;
+  border-radius: 30px;
+  background: #222;
+  color: #ffffff;
+  font-size: 16px;
+  outline: none;
+}
+
+/* Placeholder */
+input::placeholder,
+textarea::placeholder {
+  color: #ccc;
+  opacity: 1;
+}
+
+/* Textarea ajustes */
+textarea {
+  resize: none;
+  height: 110px;
+}
+
+/* Select */
+select {
+  background: #222;
+  color: #fff;
+  appearance: none;
+}
+
+/* Botón */
+.btn {
+  margin-top: 35px;
+  padding: 18px;
+  width: 100%;
+  max-width: 420px;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(90deg, #00b3da, #00ff99);
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Mensajes de error */
+.error {
+  color: red;
+  font-size: 14px;
+  position: absolute;
+  bottom: -20px;
+  left: 55px;
+}
+
+/* ===========================
+   SECCIÓN DERECHA (FONDO + LOGO)
+   =========================== */
+.right {
+  flex: 1;
+  background: url("/static/formulario1.jpg") no-repeat center center/cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.right img {
+  max-width: 300px;
+  height: auto;
+}
+
+/* Volver */
+.btn-volver {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: #00695c;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  transition: background 0.3s;
+}
+
+.btn-volver:hover {
+  background-color: #004d40;
+}

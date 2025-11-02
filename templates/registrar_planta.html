@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Planta</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #a8e6cf, #dcedc1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h2 {
+            color: #388e3c;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 5px;
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: 1px solid #81c784;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            padding: 12px;
+            border: none;
+            width: 100%;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #388e3c;
+        }
+
+        .mensaje {
+            color: red;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Registro de Planta</h2>
+
+        {% if mensaje %}
+            <p class="mensaje">{{ mensaje }}</p>
+        {% else %}
+        <form method="POST" action="/registrar_planta">
+            <label for="nombre_comun">Nombre común:</label>
+            <input type="text" name="nombre_comun" id="nombre_comun" required>
+
+            <label for="tamano">Tamaño (cm):</label>
+            <input type="number" name="tamano" id="tamano" step="0.01" required>
+
+            <label for="observaciones">Observaciones:</label>
+            <textarea name="observaciones" id="observaciones" rows="3"></textarea>
+
+            <label for="nsubparcela">Subparcela:</label>
+            <select name="nsubparcela" id="nsubparcela" required>
+                <option value="">Seleccione una</option>
+                <option value="Subparcela 1">Subparcela 1</option>
+                <option value="Subparcela 2">Subparcela 2</option>
+                <option value="Subparcela 3">Subparcela 3</option>
+                <option value="Subparcela 4">Subparcela 4</option>
+            </select>
+
+            <label for="id_brigada">ID de Brigada:</label>
+            <input type="number" name="id_brigada" id="id_brigada" required>
+
+            <button type="submit">Registrar Planta</button>
+        </form>
+        {% endif %}
+    </div>
+</body>
+</html>

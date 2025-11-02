@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Planta</title>
+    <!-- Tu hoja de estilos -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Botón Volver -->
+    {% if session['nombre'] == 'admin' %}
+        <a href="{{ url_for('index2') }}" class="btn-volver">⬅ Volver</a>
+    {% else %}
+        <a href="{{ url_for('main_index') }}" class="btn-volver">⬅ Volver</a>
+    {% endif %}
+
+
+    <div class="container">
+
+        <!-- Sección izquierda -->
+        <div class="left">
+            <h1>PLANTAS</h1>
+
+            {% if advertencia %}
+                <div class="flash-messages" style="background-color:#ffcccc; padding:10px; border-radius:8px;">
+                    <p>{{ advertencia }}</p>
+                </div>
+            {% else %}
+                <p><strong>Reserva activa:</strong> {{ reserva[1] }}</p>
+
+                <form action="{{ url_for('registrar_planta') }}" method="POST">
+                    
+                    <!-- Nombre común -->
+                    <div class="input-field">
+                        <i class="fa-solid fa-seedling"></i>
+                        <input type="text" name="nombre_comun" id="nombre_comun" placeholder="Nombre común" maxlength="50" required>
+                    </div>
+
+                    <!-- Tamaño -->
+                    <div class="input-field">
+                        <i class="fa-solid fa-ruler-vertical"></i>
+                        <input type="number" step="0.01" name="tamano" id="tamano" placeholder="Tamaño (cm)" required>
+                    </div>
+
+                    <!-- Subparcela -->
+                    <div class="input-field">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                        <select name="nsubparcela" id="nsubparcela" required>
+                            {% for sub in subparcelas %}
+                                <option value="Subparcela {{ sub.id }}">
+                                    Subparcela {{ sub.id }} — {{ sub.direccion }} ({{ sub.distancia }} m)
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Observaciones -->
+                    <div class="input-field">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <textarea name="observaciones" id="observaciones" rows="3" placeholder="Observaciones (opcional)"></textarea>
+                    </div>
+
+                    <!-- Botón enviar -->
+                    <button type="submit" class="btn">Registrar Planta</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <!-- Sección derecha (fondo e imagen) -->
+        <div class="right">
+            <img src="{{ url_for('static', filename='LogoIDEAM.png') }}" alt="Logo IDEAM">
+        </div>
+
+    </div>
+
+  <!-- Script validación (opcional, mejora UX) -->
+  <script>
+    document.getElementById("plantasForm")?.addEventListener("submit", function(e) {
+      const tamano = document.getElementById("tamano").value;
+      const nombre = document.getElementById("nombre_comun").value.trim();
+      const obs = document.getElementById("observaciones").value.trim();
+
+      if (tamano <= 0) {
+        alert("El tamaño debe ser mayor que 0");
+        e.preventDefault();
+      }
+      if (nombre.length < 2) {
+        alert("Ingrese un nombre común válido");
+        e.preventDefault();
+      }
+      if (obs.length < 3) {
+        alert("Ingrese observaciones más descriptivas");
+        e.preventDefault();
+      }
+    });
+  </script>
+
+</body>
+</html>

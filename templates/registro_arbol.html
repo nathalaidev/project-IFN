@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registrar Árbol</title>
+
+  <!-- Hoja de estilo -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+  <!-- Botón Volver -->
+  {% if session.get('rol') == 'admin' %}
+    <a href="{{ url_for('index2') }}" class="btn-volver">⬅ Volver</a>
+  {% else %}
+    <a href="{{ url_for('main_index') }}" class="btn-volver">⬅ Volver</a>
+  {% endif %}
+
+  <div class="container">
+    <!-- LADO IZQUIERDO: FORMULARIO -->
+    <div class="left">
+      <h1>REGISTRO DE ÁRBOLES</h1>
+
+      <!-- Mensajes de advertencia o éxito -->
+      {% if advertencia %}
+        <div class="flash-messages" style="background-color:#ffcccc; color:#a00; padding:10px; border-radius:8px; margin-bottom:12px;">
+          <p>{{ advertencia }}</p>
+        </div>
+      {% endif %}
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="flash-messages" style="background-color:#e6ffed; color:#0b5; padding:10px; border-radius:8px; margin-bottom:12px;">
+            {% for message in messages %}
+              <p>{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <!-- Info de reserva -->
+      <p><strong>Reserva activa:</strong> {{ reserva[1] if reserva else 'Ninguna' }}</p>
+
+      <form id="arbolForm" action="{{ url_for('registrar_arbol') }}" method="POST" novalidate>
+
+        <!-- Altura -->
+        <div class="input-field">
+          <i class="fa-solid fa-ruler-vertical"></i>
+          <input type="number" step="0.1" min="0" name="altura" id="altura" placeholder="Altura (cm)" required>
+        </div>
+
+        <!-- Diámetro -->
+        <div class="input-field">
+          <i class="fa-solid fa-circle-notch"></i>
+          <input type="number" step="0.1" min="0" name="diametro" id="diametro" placeholder="Diámetro (cm)" required>
+        </div>
+
+        <!-- Daño -->
+        <div class="input-field">
+          <i class="fa-solid fa-bug"></i>
+          <select name="dano" id="dano" required>
+            <option value="">Selecciona tipo de daño</option>
+            <option value="DB">DB - Daño biológico</option>
+            <option value="DM">DM - Daño mecánico</option>
+            <option value="EB">EB - Estrangulado por bejuco, matapalo o liana</option>
+            <option value="Q">Q - Quebrado</option>
+            <option value="SD">SD - Sin daño</option>
+          </select>
+        </div>
+
+        <!-- Forma del fuste -->
+        <div class="input-field">
+          <i class="fa-solid fa-tree"></i>
+          <select name="formafuste" id="formafuste" required>
+            <option value="">Selecciona forma del fuste</option>
+            <option value="CIL">CIL - Cilíndrico</option>
+            <option value="FA">FA - Fuste acanalado</option>
+            <option value="INC">INC - Inclinado</option>
+            <option value="IRR">IRR - Irregular</option>
+            <option value="RT">RT - Raíces tablares / contrafuertes / bambas / raíces fulcreas</option>
+          </select>
+        </div>
+
+        <!-- Subparcela -->
+        <div class="input-field">
+          <i class="fa-solid fa-map-location-dot"></i>
+          <select name="nsubparcela" id="nsubparcela" required>
+            <option value="">Selecciona subparcela</option>
+            {% for sub in subparcelas %}
+              <option value="{{ sub.id }}">Subparcela {{ sub.id }} — {{ sub.direccion }} ({{ sub.distancia }} m)</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="input-field">
+          <i class="fa-solid fa-pen-to-square"></i>
+          <textarea name="observaciones" id="observaciones" rows="4" placeholder="Observaciones (opcional)"></textarea>
+        </div>
+
+        <button type="submit" class="btn">Registrar Árbol</button>
+      </form>
+    </div>
+
+    <!-- LADO DERECHO: IMAGEN -->
+    <div class="right">
+      <img src="{{ url_for('static', filename='LogoIDEAM.png') }}" alt="Logo IDEAM">
+    </div>
+  </div>
+
+  <!-- Validación básica con JS -->
+  <script>
+    document.getElementById('arbolForm')?.addEventListener('submit', function(e) {
+      const altura = parseFloat(document.getElementById('altura').value || 0);
+      const diametro = parseFloat(document.getElementById('diametro').value || 0);
+      const dano = document.getElementById('dano').value;
+      const forma = document.getElementById('formafuste').value;
+      const sub = document.getElementById('nsubparcela').value;
+
+      let ok = true;
+      let msg = [];
+
+      if (isNaN(altura) || altura <= 0) {
+        ok = false; msg.push("La altura debe ser un número mayor que 0 (en cm).");
+      }
+      if (isNaN(diametro) || diametro <= 0) {
+        ok = false; msg.push("El diámetro debe ser un número mayor que 0 (en cm).");
+      }
+      if (!dano) {
+        ok = false; msg.push("Selecciona el tipo de daño.");
+      }
+      if (!forma) {
+        ok = false; msg.push("Selecciona la forma del fuste.");
+      }
+      if (!sub) {
+        ok = false; msg.push("Selecciona una subparcela.");
+      }
+
+      if (!ok) {
+        e.preventDefault();
+        alert(msg.join("\n"));
+      }
+    });
+  </script>
+
+</body>
+</html>

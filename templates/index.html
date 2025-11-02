@@ -20,7 +20,7 @@
       <ul>
         <li><a href="#inicio">Inicio</a></li>
         <li><a href="#acerca">Acerca de Nosotros</a></li>
-        <li><a href="{{ url_for('login') }}">Cerrar Sesión</a></li>
+        <li><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
       </ul>
     </nav>
 
@@ -61,14 +61,14 @@
 
   <!-- TARJETAS -->
   <section class="action-buttons" id="registros">
-    <a href="{{ url_for('registro_arbol') }}" class="card arboles">
+    <a href="{{ url_for('registrar_arbol') }}" class="card arboles">
       <div class="card-img"
         style="background-image: url('{{ url_for('static', filename='img/formularioarbol.jpg') }}');">
       </div>
       <div class="card-text">Formulario Árboles</div>
     </a>
 
-    <a href="{{ url_for('registro_plantas') }}" class="card plantas">
+    <a href="{{ url_for('registrar_planta') }}" class="card plantas">
       <div class="card-img"
         style="background-image: url('{{ url_for('static', filename='img/formularioplantas.jpg') }}');">
       </div>
@@ -85,6 +85,13 @@
       <p><strong>Fecha de inicio:</strong> {{ brigada['fecha_inicio'] }}</p>
       <p><strong>Fecha de fin:</strong> {{ brigada['fecha_fin'] }}</p>
       <p><strong>Coordenadas:</strong> {{ brigada['latitud'] }}, {{ brigada['longitud'] }}</p>
+    </div>
+  </section>
+  {% else %}
+  <section class="brigada-section">
+    <div class="brigada-box empty">
+      <h2>No tienes brigadas activas actualmente</h2>
+      <p>Cuando se te asigne una brigada dentro de tu rango de fechas, aparecerá aquí.</p>
     </div>
   </section>
   {% endif %}

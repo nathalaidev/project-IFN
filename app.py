@@ -36,6 +36,11 @@ pool = oracledb.create_pool(
 def home():
     return redirect(url_for('login'))
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     departamentos = [
@@ -113,6 +118,10 @@ def login():
     return render_template('login.html')
 
 
+from datetime import datetime
+
+from datetime import date
+
 @app.route('/index')
 def main_index():
     nro_doc = session.get('usuario')
@@ -122,14 +131,18 @@ def main_index():
         with pool.acquire() as connection:
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    SELECT r.MUNICIPIO, TO_CHAR(r.FECHA_INICIO, 'DD/MM/YYYY'),
+                    SELECT r.MUNICIPIO,
+                           TO_CHAR(r.FECHA_INICIO, 'DD/MM/YYYY'),
                            TO_CHAR(r.FECHA_FIN, 'DD/MM/YYYY'),
                            r.LATITUD, r.LONGITUD
                     FROM reserva_evento r
                     JOIN reserva_participante p ON r.ID_RESERVA = p.ID_RESERVA
                     WHERE p.NRO_DOCUMENTO_USUARIO = :doc
+                      AND TRUNC(SYSDATE) BETWEEN TRUNC(r.FECHA_INICIO) AND TRUNC(r.FECHA_FIN)
                 """, {'doc': nro_doc})
+
                 row = cursor.fetchone()
+
                 if row:
                     brigada = {
                         'municipio': row[0],
@@ -143,6 +156,8 @@ def main_index():
 
 
 
+
+
 @app.route('/index2')
 def index2():
     if 'usuario' not in session:
@@ -152,18 +167,189 @@ def index2():
 
 # Rutas de ejemplo que tenías
 from flask import session as flask_session  # usado sólo para comprobar existencia
-@app.route('/registro-arbol')
-def registro_arbol():
+@app.route('/registrar_arbol', methods=['GET', 'POST'])
+def registrar_arbol():
     if 'usuario' not in session:
         return redirect(url_for('login'))
-    return render_template('RegistroArbol.html')
 
-@app.route('/registro-plantas')
-def registro_plantas():
+    nro_documento = session['usuario']
+
+    with pool.acquire() as connection:
+        with connection.cursor() as cursor:
+            # Buscar reserva asociada al usuario
+            cursor.execute("""
+                SELECT re.ID_RESERVA, re.MUNICIPIO, re.LATITUD, re.LONGITUD
+                FROM RESERVA_PARTICIPANTE rp
+                JOIN RESERVA_EVENTO re ON rp.ID_RESERVA = re.ID_RESERVA
+                WHERE rp.NRO_DOCUMENTO_USUARIO = :nro_documento
+            """, {'nro_documento': nro_documento})
+            reserva = cursor.fetchone()
+
+            if not reserva:
+                return render_template(
+                    'registro_arbol.html',
+                    advertencia="⚠ No tienes ninguna reserva asignada.",
+                    subparcelas=[],
+                    mensaje=None
+                )
+
+            # Subparcelas predefinidas
+            subparcelas = [
+                {'id': 1, 'direccion': 'Norte', 'distancia': 80},
+                {'id': 2, 'direccion': 'Sur', 'distancia': 80},
+                {'id': 3, 'direccion': 'Este', 'distancia': 80},
+                {'id': 4, 'direccion': 'Oeste', 'distancia': 80},
+            ]
+
+            mensaje = None
+            advertencia = None
+
+            if request.method == 'POST':
+                altura = request.form['altura']
+                dano = request.form['dano']
+                diametro = request.form['diametro']
+                formafuste = request.form['formafuste']
+                observaciones = request.form['observaciones']
+                nsubparcela = request.form['nsubparcela']
+                id_reserva = reserva[0]
+
+                try:
+                    cursor.execute("""
+                        INSERT INTO ARBOL (ALTURA, DANO, DIAMETRO, FORMAFUSTE, OBSERVACIONES,
+                                           NSUBPARCELA, NRO_DOCUMENTO, ID_RESERVA)
+                        VALUES (:altura, :dano, :diametro, :formafuste, :observaciones,
+                                :nsubparcela, :nro_doc, :id_reserva)
+                    """, {
+                        'altura': altura,
+                        'dano': dano,
+                        'diametro': diametro,
+                        'formafuste': formafuste,
+                        'observaciones': observaciones,
+                        'nsubparcela': nsubparcela,
+                        'nro_doc': nro_documento,
+                        'id_reserva': id_reserva
+                    })
+                    connection.commit()
+                    mensaje = "✅ Árbol registrado exitosamente."
+                except Exception as e:
+                    connection.rollback()
+                    import traceback
+                    print("❌ Error al registrar el árbol:", traceback.format_exc())
+                    advertencia = f"❌ Error al registrar el árbol: {str(e)}"
+
+    # Renderizar la misma página sin redirección
+    return render_template(
+        'registro_arbol.html',
+        reserva=reserva,
+        subparcelas=subparcelas,
+        mensaje=mensaje,
+        advertencia=advertencia
+    )
+
+
+
+
+
+
+@app.route('/registrar_planta', methods=['GET', 'POST'])
+def registrar_planta():
     if 'usuario' not in session:
         return redirect(url_for('login'))
-    return render_template('RegistroPlantas.html')
 
+    nro_documento = session['usuario']
+
+    with pool.acquire() as connection:
+        with connection.cursor() as cursor:
+            # 🔹 Buscar SOLO la reserva vigente del usuario
+            cursor.execute("""
+                SELECT re.ID_RESERVA, re.MUNICIPIO, re.LATITUD, re.LONGITUD,
+                       re.FECHA_INICIO, re.FECHA_FIN
+                FROM RESERVA_PARTICIPANTE rp
+                JOIN RESERVA_EVENTO re ON rp.ID_RESERVA = re.ID_RESERVA
+                WHERE rp.NRO_DOCUMENTO_USUARIO = :nro_documento
+                ORDER BY re.FECHA_INICIO DESC
+            """, {'nro_documento': nro_documento})
+
+            reservas = cursor.fetchall()
+
+            if not reservas:
+                return render_template(
+                    'registroplantas.html',
+                    advertencia="⚠ No tienes ninguna reserva asignada.",
+                    subparcelas=[]
+                )
+
+            # 🔹 Buscar la reserva activa (entre fecha_inicio y fecha_fin)
+            fecha_actual = datetime.now().date()
+            reserva_activa = None
+
+            for r in reservas:
+                fecha_inicio = r[4]
+                fecha_fin = r[5]
+
+                # Convertir a date si son datetime
+                if isinstance(fecha_inicio, datetime):
+                    fecha_inicio = fecha_inicio.date()
+                if isinstance(fecha_fin, datetime):
+                    fecha_fin = fecha_fin.date()
+
+                if fecha_inicio <= fecha_actual <= fecha_fin:
+                    reserva_activa = r
+                    break
+
+            if not reserva_activa:
+                return render_template(
+                    'registroplantas.html',
+                    advertencia="⚠ No tienes ninguna reserva activa en este momento.",
+                    subparcelas=[]
+                )
+
+            # 🔹 Subparcelas predefinidas
+            subparcelas = [
+                {'id': 1, 'direccion': 'Norte', 'distancia': 80},
+                {'id': 2, 'direccion': 'Sur', 'distancia': 80},
+                {'id': 3, 'direccion': 'Este', 'distancia': 80},
+                {'id': 4, 'direccion': 'Oeste', 'distancia': 80},
+            ]
+
+            # 🔹 Procesar formulario si es método POST
+            if request.method == 'POST':
+                tamano = request.form['tamano']
+                nombre_comun = request.form['nombre_comun']
+                observaciones = request.form['observaciones']
+                nsubparcela = request.form['nsubparcela']
+                id_reserva = reserva_activa[0]
+                id_brigada = 1  # Temporal
+
+                try:
+                    cursor.execute("""
+                        INSERT INTO PLANTA (TAMANO, NOMBRE_COMUN, OBSERVACIONES,
+                                            NSUBPARCELA, ID_RESERVA, NRO_DOCUMENTO_USUARIO, ID_BRIGADA)
+                        VALUES (:tamano, :nombre_comun, :observaciones,
+                                :nsubparcela, :id_reserva, :nro_doc, :id_brigada)
+                    """, {
+                        'tamano': tamano,
+                        'nombre_comun': nombre_comun,
+                        'observaciones': observaciones,
+                        'nsubparcela': nsubparcela,
+                        'id_reserva': id_reserva,
+                        'nro_doc': nro_documento,
+                        'id_brigada': id_brigada
+                    })
+                    connection.commit()
+                    flash("✅ Planta registrada exitosamente.")
+                except Exception as e:
+                    connection.rollback()
+                    import traceback
+                    print("❌ Error al registrar la planta:", traceback.format_exc())
+                    flash(f"❌ Error al registrar la planta: {str(e)}")
+
+    return render_template(
+        'registroplantas.html',
+        reserva=reserva_activa,
+        subparcelas=subparcelas,
+        advertencia=None
+    )
 @app.route('/registro_brigada')
 def registro_brigada():
     if 'usuario' not in session:
