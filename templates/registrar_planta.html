@@ -4,14 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Planta</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
+        /* === Estilos del body y formulario === */
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #a8e6cf, #dcedc1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
         }
 
@@ -23,6 +21,7 @@
             max-width: 450px;
             width: 100%;
             text-align: center;
+            margin: 150px auto 50px auto; /* espacio debajo del header */
         }
 
         h2 {
@@ -69,9 +68,90 @@
             font-weight: 600;
             margin-top: 10px;
         }
+
+        /* === Estilos del header (traídos del otro HTML) === */
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: background 0.3s, box-shadow 0.3s;
+            z-index: 1000;
+        }
+
+        #header.scrolled {
+            background: #f5f5f5;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .logo img {
+            height: 50px;
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .navbar a:hover {
+            color: #388e3c;
+        }
+
+        .search-box input {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
+
+    <!-- HEADER -->
+    <header id="header">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='img/logoIDEAM.png') }}" alt="IDEAM Logo">
+        </div>
+
+        <!-- NAVBAR -->
+        <nav class="navbar">
+            <ul>
+                <li><a href="{{ url_for('index2') }}">Inicio</a></li>
+                <li><a href="#acerca">Acerca de Nosotros</a></li>
+                <li><a href="{{ url_for('login') }}">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+
+        <!-- Buscador -->
+        <div class="search-box">
+            <input type="text" placeholder="Buscar...">
+        </div>
+    </header>
+
+    <!-- Script efecto scroll -->
+    <script>
+        window.addEventListener("scroll", function () {
+            const header = document.getElementById("header");
+            header.classList.toggle("scrolled", window.scrollY > 50);
+        });
+    </script>
+
+    <!-- CONTENIDO PRINCIPAL -->
     <div class="container">
         <h2>Registro de Planta</h2>
 

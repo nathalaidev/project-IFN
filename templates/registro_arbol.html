@@ -8,23 +8,95 @@
   <!-- Hoja de estilo -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    /* === HEADER FIJO === */
+    #header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 40px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      z-index: 10000;
+    }
+
+    .logo img {
+      height: 45px;
+    }
+
+    .navbar ul {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .navbar a:hover {
+      color: #388e3c;
+    }
+
+    .search-box input {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    /* === CONTENIDO PRINCIPAL === */
+    .container {
+      margin-top: 70px; /* espacio mínimo debajo del header */
+    }
+  </style>
 </head>
 
 <body>
 
-  <!-- Botón Volver -->
-  {% if session.get('rol') == 'admin' %}
-    <a href="{{ url_for('index2') }}" class="btn-volver">⬅ Volver</a>
-  {% else %}
-    <a href="{{ url_for('main_index') }}" class="btn-volver">⬅ Volver</a>
-  {% endif %}
+  <!-- === HEADER FIJO === -->
+  <header id="header">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='img/logoIDEAM.png') }}" alt="IDEAM Logo">
+    </div>
 
+    <!-- NAVBAR con roles -->
+    <nav class="navbar">
+        <ul>
+            {% if session['nombre'] == 'admin' %}
+                <li><a href="{{ url_for('index2') }}">Inicio</a></li>
+            {% else %}
+                <li><a href="{{ url_for('main_index') }}">Inicio</a></li>
+            {% endif %}
+            
+            <li><a href="#acerca">Acerca de Nosotros</a></li>
+            <li><a href="{{ url_for('login') }}">Cerrar Sesión</a></li>
+        </ul>
+    </nav>
+
+    <!-- Buscador -->
+    <div class="search-box">
+      <input type="text" placeholder="Buscar...">
+    </div>
+  </header>
+
+
+  <!-- === CONTENIDO PRINCIPAL === -->
   <div class="container">
     <!-- LADO IZQUIERDO: FORMULARIO -->
     <div class="left">
       <h1>REGISTRO DE ÁRBOLES</h1>
 
-      <!-- Mensajes de advertencia o éxito -->
+      <!-- Mensajes -->
       {% if advertencia %}
         <div class="flash-messages" style="background-color:#ffcccc; color:#a00; padding:10px; border-radius:8px; margin-bottom:12px;">
           <p>{{ advertencia }}</p>
@@ -111,7 +183,7 @@
     </div>
   </div>
 
-  <!-- Validación básica con JS -->
+  <!-- Validación -->
   <script>
     document.getElementById('arbolForm')?.addEventListener('submit', function(e) {
       const altura = parseFloat(document.getElementById('altura').value || 0);
@@ -143,6 +215,14 @@
         e.preventDefault();
         alert(msg.join("\n"));
       }
+    });
+
+    // Ajuste del margen según altura del header (mínimo)
+    window.addEventListener("load", () => {
+      const header = document.getElementById("header");
+      const container = document.querySelector(".container");
+      const headerHeight = header.offsetHeight;
+      container.style.marginTop = headerHeight + "px"; // sin espacio adicional
     });
   </script>
 

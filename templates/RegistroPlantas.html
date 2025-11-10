@@ -4,21 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Planta</title>
+
     <!-- Tu hoja de estilos -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
     <!-- Iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        /* === HEADER ESTILO FIJO === */
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 10000; /* Más alto para no ser cubierto */
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+
+        #header.scrolled {
+            background: #f5f5f5;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .logo img {
+            height: 50px;
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .navbar a:hover {
+            color: #388e3c;
+        }
+
+        .search-box input {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+       
+
+    </style>
 </head>
 <body>
 
-    <!-- Botón Volver -->
-    {% if session['nombre'] == 'admin' %}
-        <a href="{{ url_for('index2') }}" class="btn-volver">⬅ Volver</a>
-    {% else %}
-        <a href="{{ url_for('main_index') }}" class="btn-volver">⬅ Volver</a>
-    {% endif %}
+    <!-- HEADER FIJO -->
+    <header id="header">
+    <div class="logo">
+        <img src="{{ url_for('static', filename='img/logoIDEAM.png') }}" alt="IDEAM Logo">
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <ul>
+            {% if session['nombre'] == 'admin' %}
+                <li><a href="{{ url_for('index2') }}">Inicio</a></li>
+            {% else %}
+                <li><a href="{{ url_for('main_index') }}">Inicio</a></li>
+            {% endif %}
+            
+            <li><a href="#acerca">Acerca de Nosotros</a></li>
+            <li><a href="{{ url_for('login') }}">Cerrar Sesión</a></li>
+        </ul>
+    </nav>
+
+    <!-- Buscador -->
+    <div class="search-box">
+        <input type="text" placeholder="Buscar...">
+    </div>
+</header>
 
 
+
+
+
+    <!-- CONTENIDO PRINCIPAL -->
     <div class="container">
 
         <!-- Sección izquierda -->
@@ -32,7 +111,7 @@
             {% else %}
                 <p><strong>Reserva activa:</strong> {{ reserva[1] }}</p>
 
-                <form action="{{ url_for('registrar_planta') }}" method="POST">
+                <form action="{{ url_for('registrar_planta') }}" method="POST" id="plantasForm">
                     
                     <!-- Nombre común -->
                     <div class="input-field">
@@ -77,27 +156,27 @@
 
     </div>
 
-  <!-- Script validación (opcional, mejora UX) -->
-  <script>
-    document.getElementById("plantasForm")?.addEventListener("submit", function(e) {
-      const tamano = document.getElementById("tamano").value;
-      const nombre = document.getElementById("nombre_comun").value.trim();
-      const obs = document.getElementById("observaciones").value.trim();
+    <!-- Validación -->
+    <script>
+        document.getElementById("plantasForm")?.addEventListener("submit", function(e) {
+            const tamano = document.getElementById("tamano").value;
+            const nombre = document.getElementById("nombre_comun").value.trim();
+            const obs = document.getElementById("observaciones").value.trim();
 
-      if (tamano <= 0) {
-        alert("El tamaño debe ser mayor que 0");
-        e.preventDefault();
-      }
-      if (nombre.length < 2) {
-        alert("Ingrese un nombre común válido");
-        e.preventDefault();
-      }
-      if (obs.length < 3) {
-        alert("Ingrese observaciones más descriptivas");
-        e.preventDefault();
-      }
-    });
-  </script>
+            if (tamano <= 0) {
+                alert("El tamaño debe ser mayor que 0");
+                e.preventDefault();
+            }
+            if (nombre.length < 2) {
+                alert("Ingrese un nombre común válido");
+                e.preventDefault();
+            }
+            if (obs.length > 0 && obs.length < 3) {
+                alert("Ingrese observaciones más descriptivas");
+                e.preventDefault();
+            }
+        });
+    </script>
 
 </body>
 </html>
