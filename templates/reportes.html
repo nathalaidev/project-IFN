@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes — IDEAM</title>
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reportes.css') }}">
+
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <h1>Reportes IDEAM</h1>
+        <nav class="navbar">
+            <ul>
+                <li><a href="{{ url_for('index2') }}">Inicio</a></li>
+                <li><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
+                <li><a class="active" href="{{ url_for('reportes') }}">Reportes</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="contenedor">
+
+        <!-- Panel de filtros -->
+        <aside class="panel-filtros">
+            <h2>Filtros</h2>
+
+            <label>Tipo de reporte</label>
+            <select id="tipoReporte">
+                <option value="">Seleccione</option>
+                <option value="Arbol">Árboles</option>
+                <option value="Planta">Plantas</option>
+            </select>
+
+            <label>Fecha inicio</label>
+            <input type="date" id="fechaInicio">
+
+            <label>Fecha fin</label>
+            <input type="date" id="fechaFin">
+
+            <button id="btnAplicar">
+                <i class="fa-solid fa-magnifying-glass"></i> Aplicar filtro
+            </button>
+        </aside>
+
+        <!-- Panel de resultados -->
+        <section class="panel-previa">
+            <h2>Resultados</h2>
+
+            <div id="tablaResultados" class="tabla"></div>
+
+                <h3>Porcentaje de Tipo de Daño</h3>
+                <canvas id="graficoDanio"></canvas>
+
+                <h3>Porcentaje de Forma del Fuste</h3>
+                <canvas id="graficoFuste"></canvas>
+
+
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='js/reportes.js') }}"></script>
+
+</body>
+</html>

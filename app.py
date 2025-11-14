@@ -1,9 +1,43 @@
 # app.py
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from flask_cors import CORS
-from datetime import datetime
 import oracledb
 import os
+
+# --- Fechas ---
+from datetime import datetime, timezone
+
+# --- MongoDB ---
+from pymongo import MongoClient
+
+# -------------------------------
+#  CONEXIÓN A MONGO (OFICIAL)
+# -------------------------------
+MONGO_URI = "mongodb://localhost:27017"
+MONGO_DB = "historial_ideam"
+
+mongo_client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=2000)
+mongo_db = mongo_client[MONGO_DB]
+
+print("Mongo conectado correctamente")
+
+# -------------------------------
+#  FUNCIÓN PARA GUARDAR HISTORIAL
+# -------------------------------
+def log_action(user: str, action: str, details: dict | None = None):
+    try:
+        doc = {
+            "user": user or "anon",
+            "action": action,
+            "details": details or {},
+            "ts": datetime.now(timezone.utc)
+        }
+        mongo_db.historial.insert_one(doc)
+        print("✔ Historial guardado")
+    except Exception as e:
+        print("❌ Error guardando historial:", e)
+
+
 
 # --- Configuración Oracle Instant Client (Thick) ---
 # Ajusta la ruta según tu instalación de Instant Client en Windows
@@ -86,11 +120,11 @@ def login():
             with pool.acquire() as connection:
                 with connection.cursor() as cursor:
                     p_valido = cursor.var(int)
-                    # Llama al procedimiento almacenado SP_LOGIN_USUARIO
+
                     cursor.callproc("SP_LOGIN_USUARIO", [nro_documento, contrasena, p_valido])
 
                     if p_valido.getvalue() == 1:
-                        # Credenciales correctas -> obtener nombre para decidir ruta
+                        # Obtiene el nombre del usuario
                         cursor.execute("""
                             SELECT NOMBRE 
                             FROM USUARIO 
@@ -99,12 +133,19 @@ def login():
                         result = cursor.fetchone()
                         nombre = result[0].lower() if result else ""
 
-                        # Guardar sesión mínima
+                        # Guarda la sesión
                         session['usuario'] = nro_documento
                         session['nombre'] = nombre
 
-                        #flash("✅ Inicio de sesión exitoso")
+                        # 🔥🔥 AGREGAR ESTO: GUARDAR LOGIN EN EL HISTORIAL
+                        log_action(
+                            user=nro_documento,
+                            action="login",
+                            details={"nombre": nombre}
+                        )
+                        # 🔥🔥 FIN
 
+                        # Redirección
                         if nombre == "admin":
                             return redirect(url_for('index2'))
                         else:
@@ -116,6 +157,7 @@ def login():
             flash(f"⚠️ Error de base de datos: {str(e)}")
 
     return render_template('login.html')
+
 
 
 from datetime import datetime
@@ -499,7 +541,62 @@ def api_crear_reserva():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
 
+@app.route("/api/reportes", methods=["GET"])
+def api_reportes():
+    tipo = request.args.get("tipo")
+    fecha_inicio = request.args.get("fechaInicio")
+    fecha_fin = request.args.get("fechaFin")
+
+    if tipo != "Arbol":
+        return jsonify({"error": "Tipo de reporte no soportado"}), 400
+
+    query = """
+        SELECT 
+            ID_ARBOL,
+            NOMBRE_CIENTIFICO,
+            NOMBRE_COMUN,
+            ALTURA,
+            DIAMETRO,
+            DANO,
+            FORMAFUSTE,
+            OBSERVACIONES,
+            NSUBPARCELA,
+            NRO_DOCUMENTO,
+            ID_RESERVA,
+            FECHA_REGISTRO
+        FROM arbol
+        WHERE (:ini IS NULL OR FECHA_REGISTRO >= TO_DATE(:ini, 'YYYY-MM-DD'))
+          AND (:fin IS NULL OR FECHA_REGISTRO <= TO_DATE(:fin, 'YYYY-MM-DD'))
+        ORDER BY FECHA_REGISTRO DESC
+    """
+
+    with pool.acquire() as conn:
+        cur = conn.cursor()
+
+        cur.execute(
+            query,
+            {
+                "ini": fecha_inicio,
+                "fin": fecha_fin
+            }
+        )
+
+        columnas = [col[0] for col in cur.description]
+        rows = cur.fetchall()
+
+        data = [dict(zip(columnas, fila)) for fila in rows]
+
+    return jsonify({
+        "tabla": data
+    })
+
+
+
+@app.route("/reportes")
+def reportes():
+    return render_template("reportes.html")
 
 # ---------------------------
 # EJECUCIÓN LOCAL

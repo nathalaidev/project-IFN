@@ -1,0 +1,108 @@
+body {
+    margin: 0;
+    background: #f5f7fa;
+    font-family: Arial, sans-serif;
+}
+
+/* Header */
+.header {
+    background: #1b4d3e;
+    color: white;
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.navbar ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.navbar a.active {
+    text-decoration: underline;
+}
+
+/* Layout */
+.contenedor {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+}
+
+.panel-filtros {
+    width: 280px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.panel-filtros label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.panel-filtros select,
+.panel-filtros input {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+#btnAplicar {
+    width: 100%;
+    margin-top: 15px;
+    background: #1b4d3e;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.panel-previa {
+    flex: 1;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.tabla table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.tabla th, .tabla td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tabla th {
+    background: #e1ebe8;
+}
+
+canvas {
+    max-width: 450px;     /* Tamaño máximo */
+    max-height: 350px;
+    width: 100%;          /* Para que sea responsivo */
+    height: auto;
+    margin: 0 auto;       /* Centrar */
+    display: block;
+}
